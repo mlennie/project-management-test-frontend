@@ -1,12 +1,28 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const TOKEN_KEY = "auth_token";
+
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
+export const setToken = (token: string) => localStorage.setItem(TOKEN_KEY, token);
+export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
 const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
+});
+
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers = {
+      ...config.headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
+  return config;
 });
 
 export interface Project {
@@ -37,9 +53,32 @@ export interface TaskInput {
   completed?: boolean;
 }
 
+export interface AuthResponse {
+  token: string;
+  user: { id: number; email: string };
+}
+
+// Auth
+export const register = async (email: string, password: string, password_confirmation: string) => {
+  const response = await api.post<AuthResponse>("/auth/register", {
+    user: { email, password, password_confirmation },
+  });
+  return response.data;
+};
+
+export const login = async (email: string, password: string) => {
+  const response = await api.post<AuthResponse>("/auth/login", { email, password });
+  return response.data;
+};
+
+export const me = async () => {
+  const response = await api.get<{ user: { id: number; email: string } }>("/auth/me");
+  return response.data;
+};
+
 // Projects
 export const getProjects = async (): Promise<Project[]> => {
-  const response = await api.get('/projects');
+  const response = await api.get("/projects");
   return response.data;
 };
 
@@ -49,7 +88,7 @@ export const getProject = async (id: number): Promise<Project> => {
 };
 
 export const createProject = async (project: ProjectInput): Promise<Project> => {
-  const response = await api.post('/projects', { project });
+  const response = await api.post("/projects", { project });
   return response.data;
 };
 

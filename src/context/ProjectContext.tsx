@@ -1,7 +1,7 @@
 /* eslint react-refresh/only-export-components: off */
-import React, { createContext, useContext, useReducer } from 'react';
-import type { ReactNode } from 'react';
-import type { Project, Task } from '../services/api';
+import React, { createContext, useContext, useReducer } from "react";
+import type { ReactNode } from "react";
+import type { Project, Task } from "../services/api";
 
 interface State {
   projects: Project[];
