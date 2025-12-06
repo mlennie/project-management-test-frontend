@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -33,13 +33,7 @@ function ProjectDetail() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      loadProject();
-    }
-  }, [id]);
-
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     if (!id) return;
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
@@ -49,7 +43,13 @@ function ProjectDetail() {
       console.error('Error loading project:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load project' });
     }
-  };
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (id) {
+      loadProject();
+    }
+  }, [id, loadProject]);
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();

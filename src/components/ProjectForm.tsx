@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Container,
@@ -12,6 +12,7 @@ import {
 import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { useProjects } from '../context/ProjectContext';
 import * as api from '../services/api';
+import type { AxiosError } from 'axios';
 
 function ProjectForm() {
   const navigate = useNavigate();
@@ -24,13 +25,7 @@ function ProjectForm() {
   });
   const [errors, setErrors] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (id) {
-      loadProject();
-    }
-  }, [id]);
-
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     if (!id) return;
     try {
       setLoading(true);
@@ -45,7 +40,13 @@ function ProjectForm() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      loadProject();
+    }
+  }, [id, loadProject]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,9 +67,10 @@ function ProjectForm() {
         dispatch({ type: 'ADD_PROJECT', payload: created });
       }
       navigate('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error saving project:', error);
-      setErrors(error.response?.data?.errors || ['Failed to save project']);
+      const apiError = error as AxiosError<{ errors?: string[] }>;
+      setErrors(apiError.response?.data?.errors || ['Failed to save project']);
     } finally {
       setLoading(false);
     }

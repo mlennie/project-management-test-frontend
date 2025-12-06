@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import {
   Container,
   Typography,
@@ -19,11 +19,7 @@ function ProjectList() {
   const navigate = useNavigate();
   const { state, dispatch } = useProjects();
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const projects = await api.getProjects();
@@ -32,7 +28,11 @@ function ProjectList() {
       console.error('Error loading projects:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load projects' });
     }
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
