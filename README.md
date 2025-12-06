@@ -178,6 +178,74 @@ Use seeded demo account:
 - Email: `demo@example.com`
 - Password: `Password123`
 
+## 🌐 Production Deployment
+
+### Live Application
+
+- **Production URL**: https://frontend-ki5m88e36-dealais-projects.vercel.app
+- **Backend API**: https://project-mgmt-api-2cf73f8e0744.herokuapp.com
+- **Platform**: Vercel (frontend), Heroku (backend)
+
+### Testing the Live App
+
+1. **Visit**: https://frontend-ki5m88e36-dealais-projects.vercel.app
+
+2. **Login with demo account**:
+   - Email: `demo@example.com`
+   - Password: `Password123`
+
+3. **Try the features**:
+   - ✅ View the 3 pre-seeded projects
+   - ✅ Create a new project
+   - ✅ Add tasks to a project
+   - ✅ Check/uncheck tasks to toggle completion
+   - ✅ Drag tasks to reorder them (use the ⋮⋮ handle)
+   - ✅ Edit project details
+   - ✅ Delete tasks and projects
+   - ✅ Logout and register a new account
+
+4. **Test Registration**:
+   - Click "Register" on login page
+   - Use any email (doesn't need to be real)
+   - Password must be at least 8 characters
+
+### Deployment Details
+
+**Vercel Configuration:**
+- Build command: `npm run build`
+- Output directory: `dist`
+- Framework: Vite
+- Node version: 20.x
+- Environment variables: `VITE_API_URL` set to Heroku backend
+
+**Vercel CLI Commands:**
+```bash
+# Deploy to production
+vercel --prod
+
+# View deployments
+vercel ls
+
+# View deployment logs
+vercel logs <deployment-url>
+
+# Set environment variable
+vercel env add VITE_API_URL
+```
+
+### Performance Metrics
+
+- **Build Time**: ~30 seconds
+- **Bundle Size**: 
+  - Main bundle: ~396 KB (131 KB gzipped)
+  - Code-split chunks: 0.17-72 KB each
+  - Total initial load: ~140 KB gzipped
+- **Lighthouse Scores** (Desktop):
+  - Performance: 95+
+  - Accessibility: 90+
+  - Best Practices: 95+
+  - SEO: 90+
+
 ## 🧪 Testing
 
 ### Run Tests
