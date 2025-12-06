@@ -39,6 +39,7 @@ export interface Task {
   title: string;
   completed: boolean;
   project_id: number;
+  position: number;
   created_at: string;
   updated_at: string;
 }
@@ -114,6 +115,10 @@ export const updateTask = async (id: number, task: Partial<TaskInput>): Promise<
 
 export const deleteTask = async (id: number): Promise<void> => {
   await api.delete(`/tasks/${id}`);
+};
+
+export const reorderTasks = async (projectId: number, taskIds: number[]): Promise<void> => {
+  await api.post(`/projects/${projectId}/tasks/reorder`, { task_ids: taskIds });
 };
 
 export default api;
