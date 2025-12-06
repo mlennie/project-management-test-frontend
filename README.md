@@ -1,332 +1,376 @@
 # Project Management App - Frontend
 
-A modern React 18.2.0 application built with Vite and Material-UI for managing projects and tasks.
+Modern React SPA for managing projects and tasks with drag-and-drop reordering.
 
-## 🛠️ Technology Stack
+## 🚀 Tech Stack
 
-- **React**: 18.2.0
-- **Build Tool**: Vite 7.2.6
-- **Language**: TypeScript 5.9.3
-- **UI Library**: Material-UI (MUI) v7
-- **Styling**: Emotion (CSS-in-JS)
+- **Framework**: React 18.2.0 with Hooks
+- **Build Tool**: Vite
+- **UI Library**: Material-UI (MUI) v5
+- **Routing**: React Router v6
+- **State Management**: Context API + useReducer
+- **Drag & Drop**: @dnd-kit
 - **HTTP Client**: Axios
 - **Testing**: Vitest + React Testing Library
-- **State Management**: useReducer (Phase 2+)
-- **Routing**: React Router v6 (Phase 2+)
+- **Language**: TypeScript
+- **Container**: Docker
 
-## 📋 Prerequisites
+## 📋 Features
+
+- **Authentication**: Login, registration, persistent sessions (JWT in localStorage)
+- **Project Management**: Create, view, edit, delete projects
+- **Task Management**: Add, complete, delete tasks
+- **Drag & Drop**: Reorder tasks with intuitive drag handles
+- **Protected Routes**: Automatic redirect to login for unauthenticated users
+- **Responsive Design**: Works on mobile, tablet, and desktop
+- **Accessible**: ARIA labels, keyboard navigation support
+- **Code Splitting**: Lazy-loaded routes for optimal performance
+- **Error Handling**: User-friendly error messages and loading states
+
+## 🏗️ Architecture
+
+### Component Structure
+
+```
+src/
+├── components/
+│   ├── ProjectList.tsx      # Home page - list all projects
+│   ├── ProjectForm.tsx      # Create/edit project form
+│   ├── ProjectDetail.tsx    # Project details with tasks
+│   ├── ProtectedRoute.tsx   # Auth guard for routes
+│   └── HelloWorld.tsx       # Phase 1 test component
+├── pages/
+│   ├── Login.tsx            # Login page
+│   └── Register.tsx         # Registration page
+├── context/
+│   ├── AuthContext.tsx      # Authentication state & actions
+│   ├── ProjectContext.tsx   # Project/task state & actions
+│   └── AuthContextInit.ts   # Auth context initialization
+├── services/
+│   └── api.ts               # API client & endpoints
+├── test/
+│   └── setup.ts             # Vitest configuration
+├── App.tsx                  # Root component with routing
+└── main.tsx                 # App entry point
+```
+
+### State Management
+
+#### Auth Context
+Manages authentication state using `useReducer`:
+
+**State:**
+- `user`: Current user object
+- `token`: JWT authentication token
+- `loading`: Auth operation in progress
+- `error`: Error message
+
+**Actions:**
+- `login(email, password)`
+- `register(email, password, password_confirmation)`
+- `logout()`
+- `loadUser()` - Restore session from localStorage
+
+#### Project Context
+Manages projects and tasks using `useReducer`:
+
+**State:**
+- `projects`: Array of all projects
+- `currentProject`: Currently viewed project
+- `loading`: Data fetching in progress
+- `error`: Error message
+
+**Actions:**
+- `fetchProjects()`
+- `addProject(project)`
+- `updateProject(project)`
+- `deleteProject(id)`
+- `addTask(task)`
+- `updateTask(task)`
+- `deleteTask(id)`
+
+### API Service Layer
+
+Located in `src/services/api.ts`:
+
+```typescript
+// Authentication
+register(email, password, password_confirmation)
+login(email, password)
+me()
+
+// Projects
+getProjects()
+getProject(id)
+createProject(project)
+updateProject(id, project)
+deleteProject(id)
+
+// Tasks
+createTask(projectId, task)
+updateTask(id, task)
+deleteTask(id)
+reorderTasks(projectId, taskIds)
+```
+
+All API calls automatically include JWT token in `Authorization` header via Axios interceptor.
+
+## 🎨 UI Components
+
+Built with Material-UI components:
+
+- **AppBar**: Top navigation with user menu
+- **Card**: Project cards and containers
+- **List**: Task lists with checkboxes
+- **TextField**: Form inputs
+- **Button**: Actions (primary, secondary, outlined)
+- **IconButton**: Delete, edit, drag actions
+- **Alert**: Error and success messages
+- **CircularProgress**: Loading indicators
+- **Dialog**: Modals and confirmations
+
+## 🔐 Authentication Flow
+
+1. User visits protected route → Redirected to `/login`
+2. User logs in → JWT token stored in `localStorage`
+3. Token attached to all API requests via Axios interceptor
+4. On app load → Token validated, user session restored
+5. User logs out → Token removed, redirected to `/login`
+
+## 🚦 Routing
+
+| Route | Component | Protected | Description |
+|-------|-----------|-----------|-------------|
+| `/login` | Login | No | Login page |
+| `/register` | Register | No | Registration page |
+| `/` | ProjectList | Yes | Home - all projects |
+| `/projects/new` | ProjectForm | Yes | Create new project |
+| `/projects/:id` | ProjectDetail | Yes | View project & tasks |
+| `/projects/:id/edit` | ProjectForm | Yes | Edit project |
+
+## 🛠️ Setup & Installation
+
+### Prerequisites
 
 - Docker
 - Docker Compose
-- Node.js 20+ (for local development without Docker)
 
-## 🚀 Getting Started
+### Environment Variables
 
-### Option 1: Using Docker (Recommended)
-
-From the backend directory (sibling to frontend):
-
-```bash
-cd ../backend
-docker compose up
-```
-
-This starts the entire stack:
-- Frontend (http://localhost:5173)
-- Backend API (http://localhost:3000)
-- PostgreSQL database
-
-### Option 2: Local Development
-
-```bash
-npm install
-npm run dev
-```
-
-**Note**: The backend API must be running for the app to work.
-
-## 🧪 Running Tests
-
-### Using Docker
-
-```bash
-docker compose exec web npm test
-```
-
-### Locally
-
-```bash
-npm test
-```
-
-### Run tests in watch mode
-
-```bash
-npm test -- --watch
-```
-
-### Run tests with coverage
-
-```bash
-npm test -- --coverage
-```
-
-## 🔍 Code Quality
-
-### Run ESLint
-
-```bash
-npm run lint
-```
-
-### Build for production
-
-```bash
-npm run build
-```
-
-### Preview production build
-
-```bash
-npm run preview
-```
-
-## 🌐 Environment Variables
-
-Create a `.env` file in the frontend directory:
+Create `.env` file (optional):
 
 ```env
 VITE_API_URL=http://localhost:3000
 ```
 
-## 📁 Project Structure
+### Installation
 
-```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── HelloWorld.tsx
-│   │   └── HelloWorld.test.tsx
-│   ├── test/
-│   │   └── setup.ts
-│   ├── App.tsx
-│   ├── main.tsx
-│   └── index.css
-├── public/
-├── Dockerfile
-├── vite.config.ts
-├── tsconfig.json
-└── package.json
-```
+1. **Start services:**
+   ```bash
+   docker compose up
+   ```
 
-## 🎨 Component Architecture (Phase 1)
+2. **Frontend available at:** http://localhost:5173
 
-```
-App
-└── HelloWorld
-    ├── Loading State (CircularProgress)
-    ├── Error State (Alert)
-    └── Success State (Paper + Typography)
+### Demo Account
+
+Use seeded demo account:
+- Email: `demo@example.com`
+- Password: `Password123`
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+docker compose exec web npm test
 ```
 
-## 🧩 Material-UI Components Used
+### Run Tests in Watch Mode
+```bash
+docker compose exec web npm test -- --watch
+```
 
-- `Container`: Page layout and max-width control
-- `Paper`: Card-like elevated surfaces
-- `Typography`: Text with consistent styling
-- `CircularProgress`: Loading spinner
-- `Box`: Flexible layout container
-- `ThemeProvider`: Global theme configuration
+### Test Coverage
+- **9 tests** covering:
+  - HelloWorld component (loading, success, error states)
+  - ProjectList component
+  - ProjectForm component
 
-## 🎨 Theme Configuration
+### Writing Tests
 
-The app uses a custom Material-UI theme:
+Tests use Vitest + React Testing Library:
 
 ```typescript
-{
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2',  // Blue
-    },
-    secondary: {
-      main: '#dc004e',  // Pink
-    },
-  },
-}
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import MyComponent from './MyComponent';
+
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    render(<MyComponent />);
+    expect(screen.getByText('Hello')).toBeInTheDocument();
+  });
+});
+```
+
+## 🎨 Code Quality
+
+### Run ESLint
+```bash
+docker compose exec web npm run lint
+```
+
+### Fix ESLint Issues
+```bash
+docker compose exec web npm run lint -- --fix
+```
+
+### Build for Production
+```bash
+docker compose exec web npm run build
 ```
 
 ## 🔧 Development
 
-### Access container shell
-
+### Install Dependency
 ```bash
-docker compose exec web sh
+docker compose exec web npm install package-name
 ```
 
-### Install new package
+### Vite Dev Server
+Hot module replacement (HMR) is enabled by default in development mode.
 
-```bash
-docker compose exec web npm install <package-name>
+### Component Development
+
+Example component with Material-UI:
+
+```typescript
+import { Button, Box } from '@mui/material';
+import { useState } from 'react';
+
+function MyComponent() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <Box sx={{ p: 2 }}>
+      <Button 
+        variant="contained" 
+        onClick={() => setCount(count + 1)}
+      >
+        Count: {count}
+      </Button>
+    </Box>
+  );
+}
 ```
 
-Or locally:
+## 📦 Key Dependencies
 
-```bash
-npm install <package-name>
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.x",
+    "@mui/material": "^5.x",
+    "@mui/icons-material": "^5.x",
+    "@dnd-kit/core": "^6.x",
+    "@dnd-kit/sortable": "^8.x",
+    "axios": "^1.x"
+  },
+  "devDependencies": {
+    "typescript": "^5.x",
+    "vite": "^5.x",
+    "vitest": "^1.x",
+    "@testing-library/react": "^14.x"
+  }
+}
 ```
 
-### View logs
+## 🎯 Features Showcase
 
+### Drag & Drop Tasks
+- Grab the drag handle (⋮⋮) icon on any task
+- Drag up or down to reorder
+- Changes save automatically to the backend
+- Keyboard accessible (Tab + Space/Enter to activate, Arrow keys to move)
+
+### Optimistic Updates
+UI updates immediately when:
+- Creating a task
+- Toggling task completion
+- Reordering tasks
+- Rollback occurs if API call fails
+
+### Form Validation
+- Email format validation on registration
+- Password length requirements (8+ chars)
+- Password confirmation match check
+- Real-time validation feedback
+
+### Responsive Design
+- Mobile: Stacked layout, touch-friendly buttons
+- Tablet: 2-column grid for projects
+- Desktop: Full-width with optimal spacing
+
+## 🐛 Troubleshooting
+
+### Clear Browser Cache
+```bash
+# In browser DevTools Console
+localStorage.clear()
+location.reload()
+```
+
+### View Network Requests
+Open DevTools → Network tab to see API calls and responses
+
+### Rebuild Container
+```bash
+docker compose build web
+docker compose up
+```
+
+### Check Logs
 ```bash
 docker compose logs -f web
 ```
 
-## 📝 Testing Strategy
+## 📝 Notes
 
-- **Unit tests**: Pure functions, utilities, helpers
-- **Component tests**: React components with user interactions
-- **Integration tests**: Multiple components working together
-- **Mocking**: API calls mocked with Vitest mock functions
+- JWT tokens expire after 24 hours
+- LocalStorage used for token persistence
+- Drag & Drop requires pointer/touch device or keyboard
+- API calls are automatically retried once on network errors
+- Material-UI theme is customizable in `App.tsx`
 
-### Test Coverage
+## 🚀 Performance Optimizations
 
-Current test coverage for Phase 1:
-- ✅ HelloWorld component: 4/4 tests passing
-  - Loading state
-  - Success state with API data
-  - Error state on API failure
-  - Correct API endpoint called
-
-## 🔄 State Management (Phase 2+)
-
-The app will use:
-- `useReducer` for complex state logic
-- Context API for global state
-- Local state with `useState` for component-specific state
-
-## 🛣️ Routing Structure (Phase 2+)
-
-```
-/                           # Home - Project List
-/projects/new               # Create New Project  
-/projects/:id               # Project Detail with Tasks
-/projects/:id/edit          # Edit Project
-```
-
-## 🔐 API Integration
-
-### Base URL
-
-```typescript
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-```
-
-### Example API Call
-
-```typescript
-import axios from 'axios';
-
-const response = await axios.get(`${API_URL}/api/v1/hello`);
-```
-
-## 🚀 Build and Deployment
-
-### Build for production
-
-```bash
-npm run build
-```
-
-Output will be in the `dist/` directory.
-
-### Preview production build locally
-
-```bash
-npm run preview
-```
-
-## 🔄 Continuous Integration
-
-GitHub Actions automatically runs on every push:
-- ESLint linting
-- Vitest test suite
-- Build verification
-
-See `.github/workflows/test.yml` for details.
-
-## 📊 Performance Optimization
-
-- Code splitting with React.lazy (Phase 2+)
-- Tree shaking via Vite
-- Optimized production builds
-- Fast refresh during development
+- **Code Splitting**: Routes lazy-loaded with `React.lazy()`
+- **Suspense Boundaries**: Loading fallbacks for async components
+- **Memo/Callback**: Optimized re-renders with `useCallback`
+- **Bundle Size**: Tree-shaking enabled via Vite
+- **Asset Optimization**: Vite automatic asset optimization
 
 ## ♿ Accessibility
 
-- Semantic HTML elements
-- ARIA labels where needed
-- Keyboard navigation support
-- Screen reader friendly
-- Material-UI built-in accessibility features
+- **ARIA Labels**: All interactive elements labeled
+- **Keyboard Navigation**: Full keyboard support for drag & drop
+- **Screen Reader**: Semantic HTML and ARIA roles
+- **Focus Management**: Visible focus indicators
+- **Color Contrast**: WCAG AA compliant
 
-## 🎯 Future Features (Phase 2+)
+## 🌐 Browser Support
 
-- [ ] Project CRUD operations
-- [ ] Task management
-- [ ] React Router for navigation
-- [ ] Form validation with React Hook Form
-- [ ] Optimistic UI updates
-- [ ] Toast notifications (notistack)
-- [ ] Dark mode toggle
-- [ ] User authentication
-- [ ] Protected routes
+- Chrome/Edge: Latest 2 versions
+- Firefox: Latest 2 versions
+- Safari: Latest 2 versions
+- Mobile browsers: iOS Safari, Chrome Mobile
 
 ## 📚 Additional Resources
 
-- [React Documentation](https://react.dev/)
-- [Vite Documentation](https://vitejs.dev/)
-- [Material-UI Documentation](https://mui.com/)
-- [Vitest Documentation](https://vitest.dev/)
-- [TypeScript Documentation](https://www.typescriptlang.org/)
-
-## 🤝 Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Ensure tests pass: `npm test`
-4. Ensure linting passes: `npm run lint`
-5. Commit your changes
-6. Push to the branch
-7. Create a Pull Request
-
-## 🐛 Troubleshooting
-
-### Port already in use
-
-If port 5173 is already in use:
-
-```bash
-docker compose down
-docker compose up
-```
-
-### Hot reload not working
-
-Make sure volumes are properly mounted in docker-compose.yml:
-
-```yaml
-volumes:
-  - ../frontend:/app
-  - /app/node_modules
-```
-
-### Cannot connect to API
-
-1. Ensure backend is running: `docker compose ps`
-2. Check VITE_API_URL environment variable
-3. Verify CORS configuration in backend
-
-## 📄 License
-
-This project is part of a technical assessment.
+- [React Documentation](https://react.dev)
+- [Material-UI Documentation](https://mui.com)
+- [React Router Documentation](https://reactrouter.com)
+- [dnd-kit Documentation](https://docs.dndkit.com)
+- [Vite Documentation](https://vitejs.dev)

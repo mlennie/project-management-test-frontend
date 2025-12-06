@@ -80,12 +80,14 @@ function SortableTask({ task, onToggle, onDelete }: SortableTaskProps) {
         {...listeners}
         size="small"
         sx={{ cursor: 'grab', mr: 1 }}
+        aria-label="Drag to reorder task"
       >
         <DragIcon />
       </IconButton>
       <Checkbox
         checked={task.completed}
         onChange={() => onToggle(task.id, task.completed)}
+        inputProps={{ 'aria-label': `Mark task "${task.title}" as ${task.completed ? 'incomplete' : 'complete'}` }}
       />
       <ListItemText
         primary={task.title}
@@ -99,6 +101,7 @@ function SortableTask({ task, onToggle, onDelete }: SortableTaskProps) {
           edge="end"
           onClick={() => onDelete(task.id)}
           size="small"
+          aria-label={`Delete task "${task.title}"`}
         >
           <DeleteIcon />
         </IconButton>
