@@ -182,13 +182,13 @@ Use seeded demo account:
 
 ### Live Application
 
-- **Production URL**: https://frontend-ki5m88e36-dealais-projects.vercel.app
+- **Production URL**: https://frontend-seven-omega-br8u0ctqz0.vercel.app
 - **Backend API**: https://project-mgmt-api-2cf73f8e0744.herokuapp.com
 - **Platform**: Vercel (frontend), Heroku (backend)
 
 ### Testing the Live App
 
-1. **Visit**: https://frontend-ki5m88e36-dealais-projects.vercel.app
+1. **Visit**: https://frontend-seven-omega-br8u0ctqz0.vercel.app
 
 2. **Login with demo account**:
    - Email: `demo@example.com`
@@ -208,18 +208,73 @@ Use seeded demo account:
    - Click "Register" on login page
    - Use any email (doesn't need to be real)
    - Password must be at least 8 characters
+   - Create your own projects and tasks!
+
+### Step-by-Step Testing Guide
+
+#### Test 1: Authentication Flow
+1. Open https://frontend-seven-omega-br8u0ctqz0.vercel.app/register
+2. Register a new account with any email
+3. You'll be auto-logged in and redirected to projects list
+4. Click "Logout" in the top-right menu
+5. Login again at https://frontend-seven-omega-br8u0ctqz0.vercel.app/login
+
+#### Test 2: Create and Manage Projects
+1. From the home page, click **"Create New Project"**
+2. Enter name: "Test Project" and description: "Testing the app"
+3. Click **Create** - you'll be redirected to the project detail page
+4. Click the **Edit** button to modify the project
+5. Change the name/description and save
+
+#### Test 3: Task Management
+1. Open any project from the home page
+2. Use the "Add Task" input at the top to create tasks
+3. Click the checkbox next to a task to mark it complete (strikethrough appears)
+4. Click the **×** button to delete a task
+5. Create multiple tasks to test drag-and-drop
+
+#### Test 4: Drag and Drop Reordering
+1. Create at least 3 tasks in a project
+2. Hover over the **⋮⋮** (drag handle) icon on the left of any task
+3. Click and hold, then drag up or down
+4. Release to drop - the order is automatically saved
+5. Refresh the page to verify the new order persists
+
+#### Test 5: Navigation and Protected Routes
+1. From a project detail page, click **"← Back to Projects"**
+2. Try to manually visit a protected route: `/projects/999` (you'll get a 404 or error)
+3. Open a new incognito window and visit the app
+4. Notice you're redirected to `/login` - all routes are protected!
+
+#### Test 6: Error Handling
+1. Turn off your internet connection
+2. Try to create a project - you'll see an error message
+3. Turn internet back on
+4. Test rate limiting (if you make too many requests too quickly, you may see 429 errors)
 
 ### Deployment Details
 
 **Vercel Configuration:**
-- Build command: `npm run build`
-- Output directory: `dist`
-- Framework: Vite
-- Node version: 20.x
-- Environment variables: `VITE_API_URL` set to Heroku backend
+- **Build command**: `npm run build`
+- **Output directory**: `dist`
+- **Framework**: Vite
+- **Node version**: 20.x
+- **Environment variables**: 
+  - `VITE_API_URL=https://project-mgmt-api-2cf73f8e0744.herokuapp.com`
+
+**Setting Environment Variables in Vercel:**
+1. Go to https://vercel.com/dashboard
+2. Select your project
+3. Navigate to **Settings** → **Environment Variables**
+4. Add `VITE_API_URL` with value `https://project-mgmt-api-2cf73f8e0744.herokuapp.com`
+5. Apply to Production, Preview, and Development
+6. Redeploy for changes to take effect
 
 **Vercel CLI Commands:**
 ```bash
+# Link project to Vercel
+vercel link
+
 # Deploy to production
 vercel --prod
 
@@ -230,7 +285,23 @@ vercel ls
 vercel logs <deployment-url>
 
 # Set environment variable
-vercel env add VITE_API_URL
+vercel env add VITE_API_URL production
+# Enter: https://project-mgmt-api-2cf73f8e0744.herokuapp.com
+
+# Pull environment variables locally
+vercel env pull
+```
+
+**Trigger New Deployment:**
+```bash
+# Via Git push (automatic deployment)
+git push origin main
+
+# Via Vercel CLI
+vercel --prod
+
+# Via Vercel Dashboard
+Settings → Deployments → Latest → Redeploy
 ```
 
 ### Performance Metrics
